@@ -14,6 +14,7 @@ import {
   FolderArchive,
   FileCheck
 } from 'lucide-react';
+import { API_BASE } from '../../../lib/api';
 
 export default function NewProjectPage() {
   const router = useRouter();
@@ -30,7 +31,7 @@ export default function NewProjectPage() {
 
   useEffect(() => {
     // Fetch GitHub Repos
-    fetch('http://127.0.0.1:8000/api/github/repos')
+    fetch(`${API_BASE}/api/github/repos`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setGithubRepos(data);
@@ -54,10 +55,10 @@ export default function NewProjectPage() {
       const formData = new FormData();
       formData.append('file', selectedFile);
       formData.append('name', projectName);
-      formData.append('repository_name', repositoryName || `repo-${projectName.lower().replace(/\s+/g, '-')}`);
+      formData.append('repository_name', repositoryName || `repo-${projectName.toLowerCase().replace(/\s+/g, '-')}`);
       formData.append('duration_days', String(durationDays));
 
-      const res = await fetch('http://127.0.0.1:8000/api/projects/upload-zip', {
+      const res = await fetch(`${API_BASE}/api/projects/upload-zip`, {
         method: 'POST',
         body: formData
       });
@@ -82,7 +83,7 @@ export default function NewProjectPage() {
 
     setLoading(true);
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/projects/', {
+      const res = await fetch(`${API_BASE}/api/projects/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

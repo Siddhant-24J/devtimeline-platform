@@ -2,10 +2,11 @@
 
 import React from 'react';
 import { Github, Sparkles, ShieldCheck, CheckCircle2, ArrowRight } from 'lucide-react';
+import { API_BASE } from '../../lib/api';
 
 export default function LoginPage() {
   const handleGitHubAuth = () => {
-    window.location.href = 'http://127.0.0.1:8000/api/auth/github/login';
+    window.location.href = `${API_BASE}/api/auth/github/login`;
   };
 
   return (

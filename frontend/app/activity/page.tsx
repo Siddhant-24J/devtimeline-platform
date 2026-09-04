@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   Zap
 } from 'lucide-react';
+import { API_BASE } from '../../lib/api';
 
 interface ActivityLog {
   id: number;
@@ -34,8 +35,8 @@ export default function ActivityPage() {
 
   useEffect(() => {
     Promise.all([
-      fetch('http://127.0.0.1:8000/api/activity/logs').then(res => res.json()).catch(() => []),
-      fetch('http://127.0.0.1:8000/api/activity/commits').then(res => res.json()).catch(() => [])
+      fetch(`${API_BASE}/api/activity/logs`).then(res => res.json()).catch(() => []),
+      fetch(`${API_BASE}/api/activity/commits`).then(res => res.json()).catch(() => [])
     ]).then(([logsData, commitsData]) => {
       setLogs(logsData.length ? logsData : getFallbackLogs());
       setCommits(commitsData.length ? commitsData : getFallbackCommits());

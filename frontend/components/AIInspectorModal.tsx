@@ -12,6 +12,7 @@ import {
   CheckCircle2,
   Terminal
 } from 'lucide-react';
+import { API_BASE } from '../lib/api';
 
 interface AIInspectorModalProps {
   isOpen: boolean;
@@ -31,7 +32,7 @@ export default function AIInspectorModal({ isOpen, onClose, projectId, projectNa
   const handleRunArchitectureAnalysis = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/ai/analyze/${projectId}`, { method: 'POST' });
+      const res = await fetch(`${API_BASE}/api/ai/analyze/${projectId}`, { method: 'POST' });
       if (res.ok) {
         const data = await res.json();
         setAnalysisResult(data);
@@ -55,7 +56,7 @@ export default function AIInspectorModal({ isOpen, onClose, projectId, projectNa
   const handleGenerateDocs = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/ai/generate-docs/${projectId}`, { method: 'POST' });
+      const res = await fetch(`${API_BASE}/api/ai/generate-docs/${projectId}`, { method: 'POST' });
       if (res.ok) {
         const data = await res.json();
         setDocsResult(data.content);

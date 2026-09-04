@@ -15,6 +15,7 @@ import {
   Zap,
   Star
 } from 'lucide-react';
+import { API_BASE } from '../../../lib/api';
 
 interface ProfileData {
   username: string;
@@ -43,7 +44,7 @@ export default function PublicProfilePage() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
 
   useEffect(() => {
-    fetch(`http://127.0.0.1:8000/api/profiles/${username}`)
+    fetch(`${API_BASE}/api/profiles/${username}`)
       .then(res => res.json())
       .then(data => setProfile(data))
       .catch(() => {

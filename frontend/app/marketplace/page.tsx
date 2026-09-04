@@ -13,6 +13,7 @@ import {
   PlusCircle,
   CheckCircle2
 } from 'lucide-react';
+import { API_BASE } from '../../lib/api';
 
 interface MarketplaceTemplate {
   id: number;
@@ -33,7 +34,7 @@ export default function MarketplacePage() {
   const [forkingId, setForkingId] = useState<number | null>(null);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/marketplace/templates')
+    fetch(`${API_BASE}/api/marketplace/templates`)
       .then(res => res.json())
       .then(data => setTemplates(data))
       .catch(() => {
@@ -83,7 +84,7 @@ export default function MarketplacePage() {
   const handleForkTemplate = async (template: MarketplaceTemplate) => {
     setForkingId(template.id);
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/projects/', {
+      const res = await fetch(`${API_BASE}/api/projects/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -15,10 +15,11 @@ import {
   TrendingUp,
   ExternalLink
 } from 'lucide-react';
+import { API_BASE } from '../../lib/api';
 
 interface Project {
   id: number;
-  name: str;
+  name: string;
   description: string;
   source_type: string;
   repository_name: string;
@@ -37,7 +38,7 @@ export default function DashboardPage() {
 
   const fetchProjects = async () => {
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/projects/');
+      const res = await fetch(`${API_BASE}/api/projects/`);
       if (res.ok) {
         const data = await res.json();
         setProjects(data);
@@ -89,7 +90,7 @@ export default function DashboardPage() {
     setTriggeringId(projectId);
     setExecutionMessage(null);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/automation/trigger/${projectId}`, {
+      const res = await fetch(`${API_BASE}/api/automation/trigger/${projectId}`, {
         method: 'POST'
       });
       if (res.ok) {

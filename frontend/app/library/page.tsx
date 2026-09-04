@@ -15,6 +15,7 @@ import {
   Layers,
   Bot
 } from 'lucide-react';
+import { API_BASE } from '../../lib/api';
 
 interface Template {
   id: number;
@@ -38,7 +39,7 @@ export default function LibraryPage() {
   const [isStarting, setIsStarting] = useState(false);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/templates/')
+    fetch(`${API_BASE}/api/templates/`)
       .then(res => res.json())
       .then(data => setTemplates(data))
       .catch(() => {
@@ -91,7 +92,7 @@ export default function LibraryPage() {
   const handleStartProject = async (template: Template) => {
     setIsStarting(true);
     try {
-      const res = await fetch('http://127.0.0.1:8000/api/projects/', {
+      const res = await fetch(`${API_BASE}/api/projects/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

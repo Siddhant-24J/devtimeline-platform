@@ -18,6 +18,7 @@ import {
   Wrench
 } from 'lucide-react';
 import AIInspectorModal from '@/components/AIInspectorModal';
+import { API_BASE } from '../../../lib/api';
 
 interface Task {
   id: number;
@@ -62,7 +63,7 @@ export default function RoadmapPage() {
 
   const fetchProjectDetails = async () => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/projects/${projectId}`);
+      const res = await fetch(`${API_BASE}/api/projects/${projectId}`);
       if (res.ok) {
         const data = await res.json();
         setProject(data);
@@ -148,7 +149,7 @@ export default function RoadmapPage() {
     setExecuting(true);
     setExecMessage(null);
     try {
-      const res = await fetch(`http://127.0.0.1:8000/api/automation/trigger/${projectId}`, {
+      const res = await fetch(`${API_BASE}/api/automation/trigger/${projectId}`, {
         method: 'POST'
       });
       if (res.ok) {

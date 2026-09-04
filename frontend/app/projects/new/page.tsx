@@ -30,8 +30,11 @@ export default function NewProjectPage() {
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(1);
 
   useEffect(() => {
-    // Fetch GitHub Repos
-    fetch(`${API_BASE}/api/github/repos`)
+    // Fetch GitHub Repos using saved token from localStorage
+    const savedToken = typeof window !== 'undefined' ? localStorage.getItem('github_token') : null;
+    const url = savedToken ? `${API_BASE}/api/github/repos?token=${savedToken}` : `${API_BASE}/api/github/repos`;
+
+    fetch(url)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setGithubRepos(data);

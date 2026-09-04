@@ -7,11 +7,16 @@ from app.services.github_service import list_github_repositories
 router = APIRouter(prefix="/github", tags=["GitHub Integration"])
 
 @router.get("/repos")
-async def list_user_github_repositories(user_id: int = 1, db: Session = Depends(get_db)):
-    """Fetches user GitHub repositories using saved access token."""
-    gh_acc = db.query(GitHubAccount).filter(GitHubAccount.user_id == user_id).first()
-    token = gh_acc.access_token if gh_acc and gh_acc.access_token else "demo_token"
-    
+async def list_user_github_repositories(token: str = None, user_id: int = 1, db: Session = Depends(get_db)):
+    """Fetches user GitHub repositories using saved access token or token query param."""
+    if not token or token.startswith("demo_"):
+        gh_acc = db.query(GitHubAccount).order_by(GitHubAccount.id.desc()).first()
+        if gh_acc and gh_acc.access_token and not gh_acc.access_token.startswith("demo_"):
+            token = gh_acc.access_token
+
+    if not token or token.startswith("demo_"):
+        return []
+
     repos = await list_github_repositories(token)
     return repos
 

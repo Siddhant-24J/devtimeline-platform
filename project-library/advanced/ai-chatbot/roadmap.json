@@ -1,0 +1,40 @@
+{
+  "name": "AI Assistant Chatbot Platform",
+  "slug": "ai-chatbot-platform",
+  "difficulty": "ADVANCED",
+  "estimated_days": 45,
+  "phases": [
+    {
+      "day_number": 1,
+      "title": "LLM Orchestration & RAG Vector Engine Setup",
+      "tasks": [
+        {"title": "Configure FAISS vector database & document chunking pipeline", "type": "BACKEND"},
+        {"title": "Implement multi-persona prompt template engine", "type": "BACKEND"}
+      ]
+    },
+    {
+      "day_number": 15,
+      "title": "Interactive Chat Interface & Streaming Responses",
+      "tasks": [
+        {"title": "Build glassmorphic chat interface with code block syntax highlighting", "type": "FRONTEND"},
+        {"title": "Integrate Server-Sent Events (SSE) for real-time token streaming", "type": "BACKEND"}
+      ]
+    },
+    {
+      "day_number": 30,
+      "title": "Document Parsing & Knowledge Base Uploads",
+      "tasks": [
+        {"title": "Build file upload dropzone for PDF/MD/DOCX knowledge ingestion", "type": "FRONTEND"},
+        {"title": "Implement automated text extraction and vector embedding worker", "type": "BACKEND"}
+      ]
+    },
+    {
+      "day_number": 45,
+      "title": "Analytics Dashboard & Enterprise Rate Limiting",
+      "tasks": [
+        {"title": "Build token usage and latency analytics charts", "type": "FRONTEND"},
+        {"title": "Implement Redis API rate limiter & security hardening", "type": "DEVOPS"}
+      ]
+    }
+  ]
+}

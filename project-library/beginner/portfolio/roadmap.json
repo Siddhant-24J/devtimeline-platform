@@ -1,0 +1,40 @@
+{
+  "name": "Personal Developer Portfolio",
+  "slug": "personal-portfolio",
+  "difficulty": "BEGINNER",
+  "estimated_days": 14,
+  "phases": [
+    {
+      "day_number": 1,
+      "title": "Project Setup & Next.js Foundation",
+      "tasks": [
+        {"title": "Initialize Next.js project layout with TypeScript and Tailwind CSS", "type": "CONFIGURATION"},
+        {"title": "Configure typography tokens, color palettes, and global CSS reset", "type": "FRONTEND"}
+      ]
+    },
+    {
+      "day_number": 3,
+      "title": "Hero Section & Interactive Bio",
+      "tasks": [
+        {"title": "Build dynamic Hero section with avatar micro-animations", "type": "FRONTEND"},
+        {"title": "Write unit test for header navigation routing", "type": "TEST"}
+      ]
+    },
+    {
+      "day_number": 7,
+      "title": "Projects Showcase & Dynamic Grid",
+      "tasks": [
+        {"title": "Implement filterable project showcase cards", "type": "FRONTEND"},
+        {"title": "Integrate GitHub API repository stats fetcher", "type": "BACKEND"}
+      ]
+    },
+    {
+      "day_number": 14,
+      "title": "Contact API & Final Release",
+      "tasks": [
+        {"title": "Implement contact form email notification endpoint", "type": "BACKEND"},
+        {"title": "Generate production build bundle & deploy docs", "type": "DOCUMENTATION"}
+      ]
+    }
+  ]
+}

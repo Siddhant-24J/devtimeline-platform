@@ -1,0 +1,40 @@
+{
+  "name": "E-Commerce Commerce Platform",
+  "slug": "ecommerce-platform",
+  "difficulty": "INTERMEDIATE",
+  "estimated_days": 30,
+  "phases": [
+    {
+      "day_number": 1,
+      "title": "Backend API & Database Schema Setup",
+      "tasks": [
+        {"title": "Setup PostgreSQL database models for Products, Orders, Users, Carts", "type": "DATABASE"},
+        {"title": "Implement JWT authentication endpoints", "type": "BACKEND"}
+      ]
+    },
+    {
+      "day_number": 10,
+      "title": "Product Catalog & Search Engine",
+      "tasks": [
+        {"title": "Create indexed product search & filtering REST API", "type": "BACKEND"},
+        {"title": "Build responsive product grid and detail modal views", "type": "FRONTEND"}
+      ]
+    },
+    {
+      "day_number": 20,
+      "title": "Shopping Cart & Stripe Checkout",
+      "tasks": [
+        {"title": "Implement persistent shopping cart state in frontend", "type": "FRONTEND"},
+        {"title": "Integrate Stripe payment intent webhook handler", "type": "BACKEND"}
+      ]
+    },
+    {
+      "day_number": 30,
+      "title": "Admin Dashboard & Production Deployment",
+      "tasks": [
+        {"title": "Build inventory management admin control panel", "type": "FRONTEND"},
+        {"title": "Write end-to-end checkout automation tests", "type": "TEST"}
+      ]
+    }
+  ]
+}

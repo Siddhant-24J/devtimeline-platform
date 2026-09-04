@@ -1,0 +1,23 @@
+# Python & Environment
+.env
+.env.local
+*.env
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+env/
+
+# Database & Workspaces
+*.db
+*.sqlite
+devtimeline.db
+automation_workspace/
+uploads/
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

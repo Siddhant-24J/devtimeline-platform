@@ -111,7 +111,9 @@ export default function DashboardPage() {
             <span>GitHub Commits</span>
             <GitCommit className="w-4 h-4 text-emerald-400" />
           </div>
-          <p className="text-2xl font-bold text-emerald-400">24</p>
+          <p className="text-2xl font-bold text-emerald-400">
+            {projects.reduce((acc, p) => acc + (p.current_day || 0), 0)}
+          </p>
         </div>
 
         <div className="glass-card p-4 rounded-xl space-y-1">
@@ -119,7 +121,9 @@ export default function DashboardPage() {
             <span>Automation Health</span>
             <Zap className="w-4 h-4 text-purple-400" />
           </div>
-          <p className="text-2xl font-bold text-purple-400">100%</p>
+          <p className="text-2xl font-bold text-purple-400">
+            {projects.length > 0 ? '100%' : '0%'}
+          </p>
         </div>
 
         <div className="glass-card p-4 rounded-xl space-y-1">
@@ -127,7 +131,9 @@ export default function DashboardPage() {
             <span>Current Streak</span>
             <TrendingUp className="w-4 h-4 text-pink-400" />
           </div>
-          <p className="text-2xl font-bold text-pink-400">12 Days</p>
+          <p className="text-2xl font-bold text-pink-400">
+            {projects.length > 0 ? `${Math.max(...projects.map(p => p.current_day || 0))} Days` : '0 Days'}
+          </p>
         </div>
       </div>
 

@@ -29,8 +29,8 @@ export default function NewProjectPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [selectedTemplateId, setSelectedTemplateId] = useState<number | null>(1);
 
-  useEffect(() => {
-    // Fetch GitHub Repos using saved token from localStorage
+  const fetchRepos = () => {
+    setLoading(true);
     const savedToken = typeof window !== 'undefined' ? localStorage.getItem('github_token') : null;
     const url = savedToken ? `${API_BASE}/api/github/repos?token=${savedToken}` : `${API_BASE}/api/github/repos`;
 
@@ -39,8 +39,13 @@ export default function NewProjectPage() {
       .then(data => {
         if (Array.isArray(data)) setGithubRepos(data);
       })
-      .catch(() => {});
-  }, []);
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchRepos();
+  }, [activeTab]);
 
   const handleZipUploadSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -234,13 +239,23 @@ export default function NewProjectPage() {
       {/* Tab 2: GitHub Repository Direct Import */}
       {activeTab === 'github' && (
         <div className="glass-card p-6 md:p-8 rounded-3xl space-y-6 border border-surface-border">
-          <div className="space-y-3">
-            <h3 className="font-bold text-white text-lg">Connected GitHub Repositories</h3>
-            <p className="text-xs text-gray-400">Select an existing repository connected to your authenticated GitHub account.</p>
+          <div className="flex items-center justify-between">
+            <div className="space-y-1">
+              <h3 className="font-bold text-white text-lg">Connected GitHub Repositories</h3>
+              <p className="text-xs text-gray-400">Select an existing repository connected to your authenticated GitHub account.</p>
+            </div>
+            <button
+              type="button"
+              onClick={fetchRepos}
+              className="px-3.5 py-2 rounded-xl bg-indigo-600/20 hover:bg-indigo-600/40 border border-indigo-500/30 text-indigo-300 text-xs font-semibold flex items-center space-x-1.5 transition-all"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+              <span>{loading ? 'Fetching...' : 'Sync Live Repos'}</span>
+            </button>
           </div>
 
           {githubRepos.length > 0 ? (
-            <div className="grid gap-3">
+            <div className="grid gap-3 max-h-60 overflow-y-auto pr-1">
               {githubRepos.map((repo) => (
                 <div key={repo.id} className="p-4 rounded-xl bg-surface border border-surface-border flex items-center justify-between">
                   <div>
@@ -261,9 +276,38 @@ export default function NewProjectPage() {
               ))}
             </div>
           ) : (
-            <div className="p-6 rounded-2xl bg-surface/60 border border-surface-border text-center space-y-2">
-              <Github className="w-8 h-8 text-gray-400 mx-auto" />
-              <p className="text-xs text-gray-300">No live repos fetched. Click Sign In with GitHub to connect account.</p>
+            <div className="p-6 rounded-2xl bg-surface/60 border border-surface-border text-center space-y-4">
+              <Github className="w-8 h-8 text-indigo-400 mx-auto" />
+              <div className="space-y-1">
+                <p className="text-xs text-gray-300 font-semibold">GitHub Connected as Authenticated Developer</p>
+                <p className="text-[11px] text-gray-400">Click "Sync Live Repos" above or type your target repository name manually below.</p>
+              </div>
+
+              <div className="max-w-md mx-auto space-y-3 pt-2 text-left">
+                <div>
+                  <label className="text-xs font-bold text-gray-300 block mb-1">Target Repository Name</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. devtimeline-platform"
+                    value={repositoryName}
+                    onChange={(e) => setRepositoryName(e.target.value)}
+                    className="w-full px-4 py-2.5 rounded-xl bg-surface border border-surface-border text-white text-xs focus:outline-none focus:border-indigo-500 font-mono"
+                  />
+                </div>
+                <button
+                  onClick={() => {
+                    if (repositoryName) {
+                      setProjectName(repositoryName);
+                      setActiveTab('builtin');
+                    } else {
+                      alert('Please enter a repository name');
+                    }
+                  }}
+                  className="w-full py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all"
+                >
+                  Use Custom Repository
+                </button>
+              </div>
             </div>
           )}
         </div>

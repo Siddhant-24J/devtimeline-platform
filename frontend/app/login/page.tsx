@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Github, Sparkles, ShieldCheck, CheckCircle2, ArrowRight } from 'lucide-react';
-import { API_BASE } from '../../lib/api';
+import { API_BASE } from '@/lib/api';
 
 export default function LoginPage() {
   const handleGitHubAuth = () => {

@@ -15,7 +15,7 @@ import {
   Layers,
   Bot
 } from 'lucide-react';
-import { API_BASE } from '../../lib/api';
+import { API_BASE } from '@/lib/api';
 
 interface Template {
   id: number;

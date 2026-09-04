@@ -13,7 +13,7 @@ import {
   PlusCircle,
   CheckCircle2
 } from 'lucide-react';
-import { API_BASE } from '../../lib/api';
+import { API_BASE } from '@/lib/api';
 
 interface MarketplaceTemplate {
   id: number;

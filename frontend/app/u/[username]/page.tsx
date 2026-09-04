@@ -15,7 +15,7 @@ import {
   Zap,
   Star
 } from 'lucide-react';
-import { API_BASE } from '../../../lib/api';
+import { API_BASE } from '@/lib/api';
 
 interface ProfileData {
   username: string;

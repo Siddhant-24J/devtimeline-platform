@@ -18,7 +18,7 @@ import {
   Wrench
 } from 'lucide-react';
 import AIInspectorModal from '@/components/AIInspectorModal';
-import { API_BASE } from '../../../lib/api';
+import { API_BASE } from '@/lib/api';
 
 interface Task {
   id: number;

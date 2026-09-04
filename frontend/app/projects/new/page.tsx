@@ -14,7 +14,7 @@ import {
   FolderArchive,
   FileCheck
 } from 'lucide-react';
-import { API_BASE } from '../../../lib/api';
+import { API_BASE } from '@/lib/api';
 
 export default function NewProjectPage() {
   const router = useRouter();

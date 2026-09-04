@@ -15,7 +15,7 @@ import {
   TrendingUp,
   ExternalLink
 } from 'lucide-react';
-import { API_BASE } from '../../lib/api';
+import { API_BASE } from '@/lib/api';
 
 interface Project {
   id: number;

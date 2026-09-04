@@ -1,21 +1,57 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
   GitBranch, 
-  FolderPlus, 
-  Store, 
   User, 
-  Activity, 
-  Settings,
-  Sparkles,
-  Github
+  Github,
+  LogOut
 } from 'lucide-react';
+import { API_BASE } from '@/lib/api';
 
 export default function Navbar() {
   const pathname = usePathname();
+  const [username, setUsername] = useState<string | null>(null);
+  const [avatar, setAvatar] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Check URL params for token & username on OAuth return
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tokenParam = urlParams.get('token');
+      const userParam = urlParams.get('username');
+      const avatarParam = urlParams.get('avatar');
+
+      if (tokenParam) {
+        localStorage.setItem('github_token', tokenParam);
+      }
+      if (userParam) {
+        localStorage.setItem('github_user', userParam);
+        setUsername(userParam);
+      }
+      if (avatarParam) {
+        localStorage.setItem('github_avatar', avatarParam);
+        setAvatar(avatarParam);
+      }
+
+      // Read existing storage if set
+      const savedUser = localStorage.getItem('github_user');
+      const savedAvatar = localStorage.getItem('github_avatar');
+      if (savedUser) setUsername(savedUser);
+      if (savedAvatar) setAvatar(savedAvatar);
+    }
+  }, []);
+
+  const handleSignOut = () => {
+    localStorage.removeItem('github_token');
+    localStorage.removeItem('github_user');
+    localStorage.removeItem('github_avatar');
+    setUsername(null);
+    setAvatar(null);
+    window.location.href = '/login';
+  };
 
   const navItems = [
     { name: 'Dashboard', href: '/dashboard' },
@@ -23,7 +59,7 @@ export default function Navbar() {
     { name: 'Library', href: '/library' },
     { name: 'Marketplace', href: '/marketplace' },
     { name: 'Activity Log', href: '/activity' },
-    { name: 'Profile', href: '/u/demo_developer' },
+    { name: 'Profile', href: username ? `/u/${username}` : '/u/developer' },
     { name: 'Settings', href: '/settings' },
   ];
 
@@ -66,19 +102,36 @@ export default function Navbar() {
           })}
         </nav>
 
-        {/* Right Status Indicator */}
+        {/* Right Auth Status Bar */}
         <div className="flex items-center space-x-3">
-          <div className="hidden sm:flex items-center space-x-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium">
-            <Github className="w-3.5 h-3.5" />
-            <span>GitHub Connected</span>
-          </div>
+          {username ? (
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-medium">
+                {avatar ? (
+                  <img src={avatar} alt={username} className="w-4 h-4 rounded-full" />
+                ) : (
+                  <Github className="w-3.5 h-3.5" />
+                )}
+                <span>@{username}</span>
+              </div>
 
-          <Link
-            href="/login"
-            className="px-3.5 py-2 rounded-xl bg-surface border border-surface-border text-white text-xs font-semibold hover:border-indigo-500/50 transition-colors"
-          >
-            Sign In
-          </Link>
+              <button
+                onClick={handleSignOut}
+                title="Sign Out"
+                className="p-2 rounded-xl bg-surface border border-surface-border text-gray-400 hover:text-white hover:border-red-500/50 transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <a
+              href={`${API_BASE}/api/auth/github/login`}
+              className="flex items-center space-x-2 px-4 py-2 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white text-xs font-semibold shadow-lg transition-all"
+            >
+              <Github className="w-4 h-4" />
+              <span>Sign In with GitHub</span>
+            </a>
+          )}
         </div>
       </div>
     </header>

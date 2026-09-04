@@ -23,8 +23,9 @@ async def github_oauth_callback(code: str = Query(...), db: Session = Depends(ge
     """Handles GitHub OAuth redirect callback."""
     token = await exchange_code_for_token(code)
     if not token:
-        # Fallback redirect to frontend with error flag
-        return RedirectResponse(url="http://localhost:3000/login?error=token_exchange_failed")
+        import os
+        frontend_url = os.getenv("FRONTEND_URL", "https://devtimeline-platform-vert.vercel.app")
+        return RedirectResponse(url=f"{frontend_url}/login?error=token_exchange_failed")
 
     gh_user = await get_authenticated_github_user(token)
     gh_id = str(gh_user.get("id", "12345"))
@@ -57,8 +58,12 @@ async def github_oauth_callback(code: str = Query(...), db: Session = Depends(ge
         gh_acc.access_token = token
     db.commit()
 
+    import os
+    frontend_url = os.getenv("FRONTEND_URL", "https://devtimeline-platform-vert.vercel.app")
+    avatar = gh_user.get("avatar_url", "")
+    
     # Redirect directly to frontend project creation page with token query param
-    return RedirectResponse(url=f"http://localhost:3000/projects/new?token={token}&username={username}&status=success")
+    return RedirectResponse(url=f"{frontend_url}/dashboard?token={token}&username={username}&avatar={avatar}&status=success")
 
 @router.post("/login/demo", response_model=UserOut)
 def demo_login(db: Session = Depends(get_db)):

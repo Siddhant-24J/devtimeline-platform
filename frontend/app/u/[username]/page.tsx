@@ -50,29 +50,20 @@ export default function PublicProfilePage() {
       .catch(() => {
         setProfile({
           username: String(username),
-          avatar_url: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150",
-          bio: "Full-Stack Developer building AI platforms and microservices with DevTimeline.",
+          avatar_url: `https://github.com/${username}.png`,
+          bio: `GitHub Developer @${username} using DevTimeline for automated git project decomposition.`,
           stats: {
-            total_projects: 3,
-            completed_projects: 1,
-            total_commits: 24,
-            streak_days: 12,
-            rank: "Senior Dev"
+            total_projects: 0,
+            completed_projects: 0,
+            total_commits: 0,
+            streak_days: 0,
+            rank: "Developer"
           },
           verified_badges: [
-            "DevTimeline V1 Pioneer",
-            "AI Engine Specialist",
-            "Full-Stack Master"
+            "DevTimeline Active User",
+            "GitHub Connected"
           ],
-          showcase_projects: [
-            {
-              id: 1,
-              name: "AI Assistant Chatbot Platform",
-              description: "Enterprise RAG AI chatbot platform with document vector search.",
-              status: "ACTIVE",
-              progress_day: "Day 15 of 45"
-            }
-          ]
+          showcase_projects: []
         });
       });
   }, [username]);

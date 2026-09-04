@@ -41,45 +41,15 @@ export default function DashboardPage() {
       const res = await fetch(`${API_BASE}/api/projects/`);
       if (res.ok) {
         const data = await res.json();
-        setProjects(data);
+        setProjects(Array.isArray(data) ? data : []);
       } else {
-        // Mock fallback if backend service restarting
-        setFallbackProjects();
+        setProjects([]);
       }
     } catch (err) {
-      setFallbackProjects();
+      setProjects([]);
     } finally {
       setLoading(false);
     }
-  };
-
-  const setFallbackProjects = () => {
-    setProjects([
-      {
-        id: 1,
-        name: 'AI Assistant Chatbot Platform',
-        description: 'Enterprise RAG chatbot with document vector search and multi-persona engine.',
-        source_type: 'BUILTIN_LIBRARY',
-        repository_name: 'ai-chatbot-platform',
-        github_repo_url: 'https://github.com/demo_developer/ai-chatbot-platform',
-        duration_days: 45,
-        current_day: 15,
-        status: 'ACTIVE',
-        created_at: new Date().toISOString()
-      },
-      {
-        id: 2,
-        name: 'E-Commerce Storefront',
-        description: 'Fullstack Next.js + FastAPI digital store with Stripe checkout integration.',
-        source_type: 'BUILTIN_LIBRARY',
-        repository_name: 'ecommerce-platform',
-        github_repo_url: 'https://github.com/demo_developer/ecommerce-platform',
-        duration_days: 30,
-        current_day: 10,
-        status: 'ACTIVE',
-        created_at: new Date().toISOString()
-      }
-    ]);
   };
 
   useEffect(() => {

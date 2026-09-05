@@ -59,10 +59,15 @@ async def upload_project_zip(
     user = db.query(User).first()
     user_id = user.id if user else 1
 
-    if not file.filename.endswith(".zip"):
+    if not file.filename.lower().endswith(".zip"):
         raise HTTPException(status_code=400, detail="Uploaded file must be a .zip archive")
 
     zip_bytes = await file.read()
+    if len(zip_bytes) > 100 * 1024 * 1024:
+        raise HTTPException(
+            status_code=400, 
+            detail="ZIP file exceeds 100MB limit. Please remove 'node_modules', 'venv', or heavy build folders before zipping your project."
+        )
 
     project = Project(
         user_id=user_id,

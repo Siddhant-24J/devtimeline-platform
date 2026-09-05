@@ -58,6 +58,11 @@ export default function NewProjectPage() {
       return;
     }
 
+    if (selectedFile.size > 100 * 1024 * 1024) {
+      alert(`⚠️ Your ZIP file is ${(selectedFile.size / (1024 * 1024)).toFixed(1)}MB.\n\nMost of this size is caused by 'node_modules' or 'venv' folders.\n\nPlease delete node_modules or venv folders before Zipping your source code (source code is usually under 10MB)!`);
+      return;
+    }
+
     setLoading(true);
     try {
       const formData = new FormData();
@@ -75,11 +80,11 @@ export default function NewProjectPage() {
         const project = await res.json();
         router.push(`/roadmap/${project.id}`);
       } else {
-        alert('ZIP project decomposition failed. Please verify your ZIP file.');
+        const errData = await res.json().catch(() => ({ detail: 'ZIP project decomposition failed.' }));
+        alert(`Upload Error: ${errData.detail || 'Please verify your ZIP file.'}`);
       }
     } catch (err) {
-      alert('Upload error. Falling back to project view.');
-      router.push('/dashboard');
+      alert('Network or timeout error during upload. Please ensure your ZIP file excludes node_modules and try again.');
     } finally {
       setLoading(false);
     }

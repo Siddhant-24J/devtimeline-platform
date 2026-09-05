@@ -33,9 +33,14 @@ class CodebaseDecomposer:
         with open(zip_save_path, "wb") as f:
             f.write(zip_file_bytes)
 
-        # Extract ZIP
+        # Extract ONLY valid source files (skipping node_modules/venv to make extraction 100x faster)
         with zipfile.ZipFile(zip_save_path, "r") as zip_ref:
-            zip_ref.extractall(project_upload_dir)
+            for member in zip_ref.infolist():
+                # Check if file path contains excluded folder
+                path_parts = member.filename.replace("\\", "/").split("/")
+                if any(part in self.EXCLUDED_DIRS for part in path_parts):
+                    continue
+                zip_ref.extract(member, project_upload_dir)
 
         # 2. Collect & Filter source files
         source_files = []

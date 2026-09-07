@@ -12,6 +12,25 @@ class CodebaseDecomposer:
     EXCLUDED_DIRS = {".git", "node_modules", "__pycache__", ".venv", "venv", "dist", "build", ".next", ".idea", ".vscode"}
     EXCLUDED_EXTENSIONS = {".pyc", ".pyo", ".exe", ".dll", ".so", ".dylib", ".zip", ".tar", ".gz"}
 
+    def extract_and_decompose_zip_file(
+        self,
+        zip_save_path: str,
+        project_upload_dir: str,
+        project: Project,
+        duration_days: int,
+        db: Session
+    ) -> Dict[str, Any]:
+        """Unzips project from stored file path, skips excluded directories, and decomposes across N daily milestones."""
+        # Extract ONLY valid source files (skipping node_modules/venv to make extraction 100x faster)
+        with zipfile.ZipFile(zip_save_path, "r") as zip_ref:
+            for member in zip_ref.infolist():
+                path_parts = member.filename.replace("\\", "/").split("/")
+                if any(part in self.EXCLUDED_DIRS for part in path_parts):
+                    continue
+                zip_ref.extract(member, project_upload_dir)
+
+        return self._process_extracted_codebase(project_upload_dir, project, duration_days, db)
+
     def extract_and_decompose_zip(
         self,
         zip_file_bytes: bytes,
@@ -33,16 +52,15 @@ class CodebaseDecomposer:
         with open(zip_save_path, "wb") as f:
             f.write(zip_file_bytes)
 
-        # Extract ONLY valid source files (skipping node_modules/venv to make extraction 100x faster)
-        with zipfile.ZipFile(zip_save_path, "r") as zip_ref:
-            for member in zip_ref.infolist():
-                # Check if file path contains excluded folder
-                path_parts = member.filename.replace("\\", "/").split("/")
-                if any(part in self.EXCLUDED_DIRS for part in path_parts):
-                    continue
-                zip_ref.extract(member, project_upload_dir)
+        return self.extract_and_decompose_zip_file(zip_save_path, project_upload_dir, project, duration_days, db)
 
-        # 2. Collect & Filter source files
+    def _process_extracted_codebase(
+        self,
+        project_upload_dir: str,
+        project: Project,
+        duration_days: int,
+        db: Session
+    ) -> Dict[str, Any]:
         source_files = []
         for root, dirs, files in os.walk(project_upload_dir):
             # Exclude vendor / build / cache folders

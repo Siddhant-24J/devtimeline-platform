@@ -58,8 +58,8 @@ export default function NewProjectPage() {
       return;
     }
 
-    if (selectedFile.size > 100 * 1024 * 1024) {
-      alert(`⚠️ Your ZIP file is ${(selectedFile.size / (1024 * 1024)).toFixed(1)}MB.\n\nMost of this size is caused by 'node_modules' or 'venv' folders.\n\nPlease delete node_modules or venv folders before Zipping your source code (source code is usually under 10MB)!`);
+    if (selectedFile.size > 500 * 1024 * 1024) {
+      alert(`⚠️ Your ZIP file is ${(selectedFile.size / (1024 * 1024)).toFixed(1)}MB.\n\nThe maximum allowed upload size is 500MB.`);
       return;
     }
 

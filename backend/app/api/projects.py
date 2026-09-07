@@ -62,12 +62,7 @@ async def upload_project_zip(
     if not file.filename.lower().endswith(".zip"):
         raise HTTPException(status_code=400, detail="Uploaded file must be a .zip archive")
 
-    zip_bytes = await file.read()
-    if len(zip_bytes) > 100 * 1024 * 1024:
-        raise HTTPException(
-            status_code=400, 
-            detail="ZIP file exceeds 100MB limit. Please remove 'node_modules', 'venv', or heavy build folders before zipping your project."
-        )
+    MAX_SIZE = 500 * 1024 * 1024
 
     project = Project(
         user_id=user_id,
@@ -83,9 +78,29 @@ async def upload_project_zip(
     db.commit()
     db.refresh(project)
 
-    # Run automated codebase decomposition across N days
-    decomp_result = codebase_decomposer.extract_and_decompose_zip(
-        zip_file_bytes=zip_bytes,
+    # Prepare extraction workspace and stream ZIP to disk in 1MB chunks
+    import os, shutil
+    upload_root = os.path.abspath("automation_workspace/uploads")
+    project_upload_dir = os.path.join(upload_root, f"project_{project.id}")
+    os.makedirs(project_upload_dir, exist_ok=True)
+    zip_save_path = os.path.join(project_upload_dir, "source.zip")
+
+    size = 0
+    with open(zip_save_path, "wb") as buffer:
+        while chunk := await file.read(1024 * 1024):
+            size += len(chunk)
+            if size > MAX_SIZE:
+                shutil.rmtree(project_upload_dir, ignore_errors=True)
+                raise HTTPException(
+                    status_code=400,
+                    detail="ZIP file exceeds the 500MB size limit."
+                )
+            buffer.write(chunk)
+
+    # Run automated codebase decomposition across N days from stored ZIP path
+    decomp_result = codebase_decomposer.extract_and_decompose_zip_file(
+        zip_save_path=zip_save_path,
+        project_upload_dir=project_upload_dir,
         project=project,
         duration_days=duration_days,
         db=db

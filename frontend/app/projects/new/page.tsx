@@ -20,6 +20,7 @@ export default function NewProjectPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'zip' | 'github' | 'builtin'>('zip');
   const [loading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [githubRepos, setGithubRepos] = useState<any[]>([]);
 
   // Form Fields
@@ -47,7 +48,7 @@ export default function NewProjectPage() {
     fetchRepos();
   }, [activeTab]);
 
-  const handleZipUploadSubmit = async (e: React.FormEvent) => {
+  const handleZipUploadSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!projectName.trim()) {
       alert('Please enter a project name');
@@ -64,30 +65,49 @@ export default function NewProjectPage() {
     }
 
     setLoading(true);
-    try {
-      const formData = new FormData();
-      formData.append('file', selectedFile);
-      formData.append('name', projectName);
-      formData.append('repository_name', repositoryName || `repo-${projectName.toLowerCase().replace(/\s+/g, '-')}`);
-      formData.append('duration_days', String(durationDays));
+    setUploadProgress(0);
 
-      const res = await fetch(`${API_BASE}/api/projects/upload-zip`, {
-        method: 'POST',
-        body: formData
-      });
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+    formData.append('name', projectName);
+    formData.append('repository_name', repositoryName || `repo-${projectName.toLowerCase().replace(/\s+/g, '-')}`);
+    formData.append('duration_days', String(durationDays));
 
-      if (res.ok) {
-        const project = await res.json();
-        router.push(`/roadmap/${project.id}`);
-      } else {
-        const errData = await res.json().catch(() => ({ detail: 'ZIP project decomposition failed.' }));
-        alert(`Upload Error: ${errData.detail || 'Please verify your ZIP file.'}`);
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `${API_BASE}/api/projects/upload-zip`);
+
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const percent = Math.round((event.loaded / event.total) * 100);
+        setUploadProgress(percent);
       }
-    } catch (err) {
-      alert('Network or timeout error during upload. Please ensure your ZIP file excludes node_modules and try again.');
-    } finally {
+    };
+
+    xhr.onload = () => {
       setLoading(false);
-    }
+      if (xhr.status >= 200 && xhr.status < 300) {
+        try {
+          const project = JSON.parse(xhr.responseText);
+          router.push(`/roadmap/${project.id}`);
+        } catch {
+          router.push('/dashboard');
+        }
+      } else {
+        let errorDetail = 'Upload failed. Render Cloud limit timed out for this ZIP file size.';
+        try {
+          const errData = JSON.parse(xhr.responseText);
+          if (errData.detail) errorDetail = errData.detail;
+        } catch {}
+        alert(`⚠️ Upload Notice (${xhr.status}):\n${errorDetail}\n\n💡 Tip: Delete node_modules or venv folders before zipping to shrink your file from 304MB to ~2MB!`);
+      }
+    };
+
+    xhr.onerror = () => {
+      setLoading(false);
+      alert('⚠️ Network Connection Error:\nUpload timed out or was closed by cloud server limit.\n\n💡 Quick Fix: Delete node_modules or venv before zipping! Source code is usually under 5MB and uploads in 2 seconds.');
+    };
+
+    xhr.send(formData);
   };
 
   const handleBuiltinSubmit = async (e: React.FormEvent) => {
@@ -233,10 +253,30 @@ export default function NewProjectPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white font-bold text-sm shadow-xl transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
+            className="w-full py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white font-bold text-sm shadow-xl transition-all disabled:opacity-80 flex flex-col items-center justify-center"
           >
-            <Sparkles className="w-4 h-4" />
-            <span>{loading ? 'Decomposing Codebase & Creating Daily Schedule...' : 'Upload & Decompose Into Daily Git Milestones'}</span>
+            {loading ? (
+              <div className="w-full max-w-md space-y-1.5 px-4 py-1">
+                <div className="flex items-center justify-between text-xs text-white font-semibold">
+                  <span className="flex items-center space-x-1.5">
+                    <Sparkles className="w-4 h-4 text-amber-300 animate-spin" />
+                    <span>Uploading Codebase & Building Schedule...</span>
+                  </span>
+                  <span className="font-mono bg-white/20 px-2 py-0.5 rounded text-[11px]">{uploadProgress}%</span>
+                </div>
+                <div className="w-full bg-black/40 h-2 rounded-full overflow-hidden border border-white/20">
+                  <div
+                    className="bg-gradient-to-r from-emerald-400 to-indigo-400 h-full transition-all duration-200"
+                    style={{ width: `${uploadProgress}%` }}
+                  />
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center space-x-2">
+                <Sparkles className="w-4 h-4" />
+                <span>Upload & Decompose Into Daily Git Milestones</span>
+              </div>
+            )}
           </button>
         </form>
       )}
